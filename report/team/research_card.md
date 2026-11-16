@@ -29,7 +29,7 @@ Phần này nối tiếp phần mini research ở buổi lý thuyết (slide 62�
 
 - Lệnh đã chạy (copy nguyên văn): `python -m lab8.benchmark --shapes workflow,single,orchestrator,swarm --cases data/public_claims.jsonl --seeds 11,22,33,44,55 --out reports/benchmark.json`
 - Run id / file report: `src/reports/benchmark.json`; ví dụ `R-workflow-C-001-s11`, `R-swarm-C-002-s55`.
-- Kết quả so với hypothesis (đúng / sai / không kết luận được), kèm số liệu: Đúng trên bộ public này. Workflow 70/70 (pass 1.000, pass^5 1.000, cost/success 27.86 VND); swarm 69/70 (pass 0.986, pass^5 0.929, cost/success 49.57 VND). Trial swarm fail là C-002 seed 55 (ticket nói trễ 5 ngày, order ghi 2 ngày); workflow không fail. Đây là so sánh shape, không chứng minh nguyên nhân phổ quát.
+- Kết quả so với hypothesis (đúng / sai / không kết luận được), kèm số liệu: Đúng trên bộ public này. Workflow 70/70 (pass 1.000, pass^5 1.000, cost/success 35.30 VND); swarm 69/70 (pass 0.986, pass^5 0.929, cost/success 49.57 VND). Trial swarm fail là C-002 seed 55 (ticket nói trễ 5 ngày, order ghi 2 ngày); workflow không fail. Đây là so sánh shape, không chứng minh nguyên nhân phổ quát.
 - Giới hạn: MockLLM không phải model sản xuất, latency là `unavailable`.
 
 Muốn đi xa hơn một ablation để lấy điểm cộng thì xem [docs/bonus_topics.md](../../docs/bonus_topics.md).

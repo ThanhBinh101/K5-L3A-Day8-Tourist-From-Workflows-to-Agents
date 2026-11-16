@@ -1,10 +1,10 @@
 {
-  "base_commit": "ecff509873ac10eeea0514f0d4a25083974051cd",
-  "state": "working tree; chưa phải commit chốt",
+  "base_commit": "ceca05b3681429f7c7fa7843db215610c63019c7",
+  "state": "integrated main code snapshot; 442 tests passed; public benchmark/crash rerun after merge",
   "python": "3.12.2",
   "sha256": {
     "src/lab8/shapes/workflow.py": "4a1df0adc028301563a1865baa574b941ef086f4667448770edc7960b33b6e03",
-    "src/lab8/shapes/single.py": "25feb3872e2ebdda63f13abfad634e1a26783f02ad131bae0c6d74f6a23381ac",
+    "src/lab8/shapes/single.py": "f81124b8d684b3e7eaa38907d45cd25f5040368d4afaeaeba31b45811fd6a35b",
     "src/lab8/shapes/orchestrator.py": "774ab2e84b07861bc3a2fdc6a12eae68669f4af31b427b1600cf6e2086765d9c",
     "src/lab8/shapes/swarm_reference.py": "6b036828c2b37f38a101aacff1b458bf4c4cffae4817936d19f0a36f45532551",
     "src/lab8/demo/web.py": "a0e26d0c3700984fedf709680ab2f35bc1a6360d8e7981b2319d6a4fecc2102a",

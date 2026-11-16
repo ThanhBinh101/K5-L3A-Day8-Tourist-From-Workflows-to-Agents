@@ -2,17 +2,21 @@
 
 ## Thông tin nhóm
 
-- Tên nhóm:
+- Tên nhóm: Tourist
 - Lớp: L3A
-- Repo nhóm: `K5-L3A-DAY08-TenNhom-FromWorkflowsToAgents` (xem [SUBMISSION.md](SUBMISSION.md))
-- URL repo, nhánh nộp, commit chốt:
+- Repo nhóm: `K5-L3A-Day8-Tourist-From-Workflows-to-Agents` (tên repo hiện tại)
+- URL repo, nhánh nộp, commit chốt: https://github.com/ThanhBinh101/K5-L3A-Day8-Tourist-From-Workflows-to-Agents · main · code ceca05b3681429f7c7fa7843db215610c63019c7
 
 ## Thành viên
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 | Nguyễn Thị Hồng San | 2A202603513 | 26ai.sannth@vinuni.edu.vn | nhánh `03513-NguyenThiHongSan` | workflow (shape A) |
-|   2 | Nguyễn Thị Thanh Thúy | 2A202603523 | thanhthuy02072004@gmail.com | Chưa xác minh | workflow/single/orchestrator; crash, benchmark, report |
+| 1 | Nguyễn Thị Thanh Bình | 2A202603497 | Chưa cung cấp | ThanhBinh101 | Single ban đầu; UI demo/test/report, có hỗ trợ Codex |
+| 2 | Lưu Đăng Tuấn | 2A202603454 | 26ai.tuanld@vinuni.edu.vn | kegacua | Crash trace và test single |
+| 3 | Nguyễn Thị Hồng San | 2A202603513 | 26ai.sannth@vinuni.edu.vn | Nhánh 03513-NguyenThiHongSan | Workflow và test biên |
+| 4 | Nguyễn Thành Danh | 2A202603493 | Theo báo cáo cá nhân | Nhánh 03493-NguyenThanhDanh | Orchestrator durability, benchmark |
+| 5 | Võ Lê Hải Đăng | 2A202603577 | 910volehaidang2019@gmail.com | Hdang3825 | Orchestrator và security tests |
+| 6 | Nguyễn Thị Thanh Thúy | 2A202603523 | 26ai.thuyntt@vinuni.edu.vn | Nhánh 03523-NguyenThiThanhThuy | Phương án ba shape, ADR/research/report |
 
 Gợi ý chia vai:
 
@@ -25,8 +29,12 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| Nguyễn Thị Hồng San | workflow (shape A) | `aae7ba2`, `2a26331`, `0314734` | `src/tests/test_workflow_shape.py` (107 test) |
-| Nguyễn Thị Thanh Thúy | Ba shape; CP3–CP5 validation/report | Chưa commit (working tree; HEAD 034c6c4) | `tests/test_public_matrix.py` (248 passed, không sửa); host suite (54 passed, không sửa) |
+| Nguyễn Thị Thanh Bình | Single ban đầu; UI/test demo có hỗ trợ Codex | `1ce29a9`, `3c3f9b2`, `92a0753` | `src/tests/test_demo_web.py` (15 trường hợp; cần người học tự review theo khai báo AI) |
+| Lưu Đăng Tuấn | Crash trace và test single | `bf6cb68` | `src/tests/test_single_shape.py` |
+| Nguyễn Thị Hồng San | Workflow và kiểm thử biên | `aae7ba2`, `2a26331`, `0314734` | `src/tests/test_workflow_shape.py` (107 test) |
+| Nguyễn Thành Danh | Orchestrator durability/benchmark | `2d6348f`, `e77ad2b` | `src/tests/test_orchestrator_durability.py` |
+| Võ Lê Hải Đăng | Orchestrator/security | `a734b3d`, `13ae289` | `src/tests/test_orchestrator_security.py` |
+| Nguyễn Thị Thanh Thúy | Phương án ba shape; ADR/research/report | `a1cf839`, `bd3941c`, `4bab90a` | Không thêm/sửa test; đã dùng test có sẵn theo báo cáo cá nhân — cần bổ sung nếu tiêu chí yêu cầu |
 
 ## Cá nhân
 

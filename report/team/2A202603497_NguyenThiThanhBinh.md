@@ -48,8 +48,8 @@ Host, `durability.py`, `policy.py`, `metrics.py`, config và dữ liệu đề k
 
 - Nhánh đã push: `03497-NguyenThiThanhBinh`.
 - Commit single ban đầu: [`1ce29a9 — feat(lab8): implement bounded single-agent claim processing`](https://github.com/ThanhBinh101/K5-L3A-Day8-Tourist-From-Workflows-to-Agents/commit/1ce29a9), thay đổi `src/lab8/shapes/single.py`.
-- Phần UI/test/báo cáo và xử lý conflict hiện là thay đổi working tree chưa commit; không dùng `1ce29a9` để khai các file bổ sung đã nằm trong lịch sử branch nộp.
-- Manifest bằng chứng tại `report/team/evidence_manifest.json` trong working tree local ghi hash code/report đã đo và commit nền; file này chưa được đưa lên nhánh cá nhân trong lần commit chỉ chứa báo cáo này.
+- Phần UI/test/báo cáo được lưu tại commit `3c3f9b2` và đã merge vào main; không gán các file bổ sung cho commit single ban đầu `1ce29a9`.
+- [Manifest bằng chứng](evidence_manifest.json) hiện đã tích hợp trên main, ghi hash code/report sau merge. Nhánh cá nhân ban đầu chỉ chứa implementation và báo cáo; UI được tích hợp qua nhánh local riêng.
 
 ### Kết quả đã kiểm chứng
 

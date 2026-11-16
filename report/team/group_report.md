@@ -2,10 +2,10 @@
 
 ## 1. Thông tin nhóm và phiên bản
 
-- Nhóm: Tourist (theo tên repo; cần xác nhận tên nhóm chính thức trong TEAM.md).
-- Lớp: L3A. Danh sách thành viên và phân công chính thức chưa được điền trong TEAM.md; báo cáo không tự gán đóng góp cá nhân.
-- Bản nền đã tích hợp workflow/orchestrator: `ecff509873ac10eeea0514f0d4a25083974051cd` trên nhánh `main`.
-- Commit chốt: **chưa tạo cho bản UI/báo cáo này**. Benchmark được chạy trên working tree đã gỡ conflict single.py; không dùng hash bản nền để giả làm hash chốt. [Manifest](evidence_manifest.json) ghi SHA-256 code và report đã đo.
+- Nhóm: Tourist; danh sách thành viên và bằng chứng đóng góp xem TEAM.md.
+- Lớp: L3A. Danh sách sáu thành viên và bằng chứng đóng góp đã được tổng hợp trong TEAM.md từ báo cáo và commit của từng nhánh; những mục chưa có bằng chứng vẫn được ghi rõ.
+- Bản nền đã tích hợp workflow/orchestrator: `ceca05b3681429f7c7fa7843db215610c63019c7` trên nhánh `main`.
+- Commit code tích hợp đã kiểm: `ceca05b3681429f7c7fa7843db215610c63019c7`. Commit kế tiếp cập nhật tài liệu sau merge. [Manifest](evidence_manifest.json) ghi SHA-256 code và report đã đo.
 
 ## 2. Mục tiêu và phương pháp
 
@@ -49,7 +49,7 @@ Nguồn số liệu: [benchmark.json](../../src/reports/benchmark.json), do lab8
 - Swarm sai C-002 seed 55: order trễ 2 ngày nhưng tin ticket nói 5 ngày. Test student coi đây là lỗi tham chiếu đã biết; việc pytest xanh không đồng nghĩa swarm đạt benchmark 100%.
 - Chưa được cung cấp student_drop/nhãn hidden: **chưa kết luận đạt hidden ≥ 0,75**.
 
-**Diễn giải lựa chọn.** Cả ba implementation đạt 70/70 public và variance=0. Single có chi phí được ghi nhận thấp nhất trong snapshot hiện tại (29,1057 VND/success), nên là ứng viên tiếp tục kiểm hidden và demo. Đây chưa phải kết luận nhân quả rằng single luôn rẻ hơn workflow: workflow hiện cộng tool_cost cho lời gọi issue_refund, single/orchestrator không cộng bước host này vào Budget; prompt và số tool đọc cũng khác. Vì vậy phải chuẩn hóa cách đếm trước khi dùng khoảng cách chi phí để chốt kiến trúc nhóm. Nếu ưu tiên mức tự chủ tối thiểu cho luật cố định, workflow vẫn là ứng viên phù hợp. Quyết định cuối và ADR/research card cần nhóm chốt, không ghi thay sự đồng thuận chưa có.
+**Diễn giải lựa chọn.** Giữ shape workflow từ ADR đã merge vì đây là mức tự chủ thấp nhất vẫn đạt 70/70 public trial. Single có chi phí được ghi nhận thấp nhất hiện tại (29,1057 VND/success), nhưng không thay đổi lựa chọn nhóm chỉ dựa trên chỉ số này: workflow hiện đếm issue_refund là tool, single/orchestrator không đếm bước host đó vào Budget, prompt và tool đọc cũng khác nhau. Cần chuẩn hóa accounting trước khi kết luận về ảnh hưởng topology. Workflow không được mô tả là rẻ nhất trong snapshot sau merge; chưa có bằng chứng hidden để chốt khả năng tổng quát.
 
 ## 5. Khó khăn và cách xử lý
 
@@ -59,7 +59,7 @@ Khi bắt đầu, single.py chứa cả hai phần conflict `Updated upstream`/`
 
 ## 6. Đóng góp và công cụ hỗ trợ
 
-Lịch sử repo có các phần workflow/orchestrator đã tích hợp; báo cáo giữ nguyên các phần đó và không nhận là vừa viết mới. Phiên này gỡ conflict single, thêm server/UI so sánh, test backend demo, chạy lại bằng chứng và soạn báo cáo với hỗ trợ Codex. Nhóm cần ghi chính xác người phụ trách, commit và test trong TEAM.md cùng báo cáo cá nhân; không tự điền tên/đóng góp/tự đánh giá chưa được xác nhận.
+Lịch sử repo có các phần workflow/orchestrator đã tích hợp; báo cáo giữ nguyên các phần đó và không nhận là vừa viết mới. Phiên này gỡ conflict single, thêm server/UI so sánh, test backend demo, chạy lại bằng chứng và soạn báo cáo với hỗ trợ Codex. TEAM.md đã tổng hợp sáu thành viên từ báo cáo/commit của các nhánh; các mục thiếu bằng chứng, bao gồm test riêng chưa bổ sung của Thanh Thúy, vẫn được ghi rõ thay vì tự điền giả.
 
 ## 7. Hạn chế, tái lập và hướng cải thiện
 
@@ -74,7 +74,7 @@ python3 -m lab8.crash_test --count 20 --out reports/crash.json
 python3 -m lab8.demo.web --port 8088
 ```
 
-Hướng tiếp theo: chuẩn hóa accounting, tự kiểm student_drop khi được cấp, hoàn tất TEAM/ADR/research card/báo cáo cá nhân, commit code và điền hash thật rồi chạy check_submission. UI/báo cáo hoàn thành không đồng nghĩa toàn bộ checklist nộp bài đã đủ.
+Hướng tiếp theo: chuẩn hóa accounting, tự kiểm student_drop khi được cấp, rà lại TEAM và báo cáo cá nhân, nhất là tiêu chí mỗi thành viên có test riêng; chạy check_submission trên bản chốt. UI/báo cáo hoàn thành không đồng nghĩa toàn bộ checklist nộp bài đã đủ.
 
 ## 8. Tài liệu tham khảo và hướng dẫn demo
 
