@@ -49,11 +49,56 @@ def run_claim(
     store_path: str,
     crash_at: str | None = None,
 ) -> RunResult:
-    conn = connect(store_path)
+    try:
+        conn = connect(store_path)
+    except Exception as exc:  # noqa: BLE001 — contract: run_claim never raises
+        return _failed_without_store(claim_id, seed, exc)
     try:
         return _run(conn, claim_id, seed=seed, crash_at=crash_at)
+    except InjectedCrash:
+        raise  # T12: the crash must surface; the trace was already flushed.
+    except Exception as exc:  # noqa: BLE001 — bad row / DB error -> failed + trace, never a raw exception
+        trace = Trace(make_run_id(SHAPE, claim_id, seed))
+        trace.add("error", {"type": type(exc).__name__})
+        try:
+            return finish(
+                conn,
+                shape=SHAPE,
+                claim_id=claim_id,
+                seed=seed,
+                status="failed",
+                proposal_amount=0,
+                budget=Budget(),
+                trace=trace,
+                error_reason=f"internal_error:{type(exc).__name__}",
+            )
+        except Exception:  # noqa: BLE001 — ledger unreadable too
+            return _failed_without_store(claim_id, seed, exc)
     finally:
         conn.close()
+
+
+def _failed_without_store(claim_id: str, seed: int, exc: Exception) -> RunResult:
+    """Last-resort result when the store itself cannot be read. Still writes a trace."""
+    trace = Trace(make_run_id(SHAPE, claim_id, seed))
+    trace.add("error", {"type": type(exc).__name__})
+    return RunResult(
+        run_id=trace.run_id,
+        claim_id=claim_id,
+        shape=SHAPE,
+        seed=seed,
+        status="failed",
+        proposal_amount=0,
+        refund_effects=[],
+        committed_audit_count=0,
+        model_calls=0,
+        tool_calls=0,
+        input_tokens=0,
+        output_tokens=0,
+        cost_estimate=0.0,
+        trace_path=trace.write(),
+        error_reason=f"internal_error:{type(exc).__name__}",
+    )
 
 
 def _run(conn: sqlite3.Connection, claim_id: str, *, seed: int, crash_at: str | None) -> RunResult:
@@ -82,10 +127,13 @@ def _run(conn: sqlite3.Connection, claim_id: str, *, seed: int, crash_at: str | 
     if not claim["found"]:
         trace.add("claim", {"found": False})
         return done("failed", 0, "unknown_claim")
-    trace.add("claim", {"found": True, "has_order_id": bool(claim["order_id"])})
+    # Whitespace-only counts as missing. A non-empty id is used verbatim (no case/homoglyph folding),
+    # so a look-alike id fails lookup and escalates instead of matching someone else's order.
+    has_order_id = bool((claim["order_id"] or "").strip())
+    trace.add("claim", {"found": True, "has_order_id": has_order_id})
 
     # 2. No order_id on the claim row -> ask for it. Never guess it from the ticket.
-    if not claim["order_id"]:
+    if not has_order_id:
         return done("needs_info", 0, "missing_order_id")
 
     # 3. Ownership / existence check. Only the reason goes to the trace.
