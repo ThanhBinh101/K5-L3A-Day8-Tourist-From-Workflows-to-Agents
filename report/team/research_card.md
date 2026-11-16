@@ -17,19 +17,19 @@ Phần này nối tiếp phần mini research ở buổi lý thuyết (slide 62�
 
 | Field | Hướng dẫn | Nhóm điền |
 | --- | --- | --- |
-| CÂU | R1 / R2 / R3 / R4 | |
-| SOURCE | Paper/blog, năm, URL, loại bằng chứng (benchmark, production report, blog kinh nghiệm) | |
-| CLAIM | Một kết luận gốc của nguồn. Không viết rộng hơn phạm vi paper | |
-| BOUNDARY | Model / dataset / setup giới hạn kết luận đó | |
-| HYPOTHESIS | Nếu đổi shape A→B (hoặc bật/tắt một thành phần), metric X sẽ đổi theo hướng nào, khoảng bao nhiêu | |
-| METHOD | Biến giữ cố định: model, tools, seed, corpus, giá, evaluator. Biến duy nhất được thay đổi: … | |
-| FAILURE / METRIC | Một lỗi dự kiến và cách đo nó: pass rate, pass^5, variance, cost/success, leak, bypass | |
+| CÂU | R1 / R2 / R3 / R4 | R2 — Failure taxonomy |
+| SOURCE | Paper/blog, năm, URL, loại bằng chứng (benchmark, production report, blog kinh nghiệm) | Mert Cemri et al. (2025), “Why Do Multi-Agent LLM Systems Fail?”, arXiv:2503.13657v3, https://arxiv.org/abs/2503.13657; nghiên cứu phân tích bộ trace MAS được gán nhãn (MAST-Data), không phải benchmark LogiX-VN. |
+| CLAIM | Một kết luận gốc của nguồn. Không viết rộng hơn phạm vi paper | Paper xây taxonomy MAST gồm 14 failure mode trong ba nhóm: system design issues, inter-agent misalignment và task verification; taxonomy được phát triển từ 150 trace, với kappa liên người gán nhãn 0.88. |
+| BOUNDARY | Model / dataset / setup giới hạn kết luận đó | Nguồn phân tích hơn 1.600 trace từ 7 framework MAS, nhiều model/task; kết quả không trực tiếp chứng minh một shape nào tốt hơn trên claims LogiX-VN. |
+| HYPOTHESIS | Nếu đổi shape A→B (hoặc bật/tắt một thành phần), metric X sẽ đổi theo hướng nào, khoảng bao nhiêu | So swarm với workflow trên public set: workflow sẽ tránh lỗi kiểm chứng T02/seed 55; dự đoán pass rate tăng khoảng 1/70 trial (0.014), đồng thời cost/success giảm. Đây là giả thuyết cho bộ public nhỏ. |
+| METHOD | Biến giữ cố định: model, tools, seed, corpus, giá, evaluator. Biến duy nhất được thay đổi: … | Giữ MockLLM, tools, 14 public claims, seeds 11/22/33/44/55, world/policy, bảng giá và evaluator cố định; thay shape workflow ↔ swarm. Shape cũng thay control flow nên đây không phải phép cô lập topology thuần túy. |
+| FAILURE / METRIC | Một lỗi dự kiến và cách đo nó: pass rate, pass^5, variance, cost/success, leak, bypass | Lỗi dự kiến là không đối chiếu claim với order nguồn sự thật (tương tự nhóm task verification trong MAST); đo status mismatch, pass rate/pass^5, seed variance và cost/success. Không gán nhãn MAST chính thức cho trace của lab. |
 
 ## Kết quả ablation
 
-- Lệnh đã chạy (copy nguyên văn):
-- Run id / file report:
-- Kết quả so với hypothesis (đúng / sai / không kết luận được), kèm số liệu:
+- Lệnh đã chạy (copy nguyên văn): `python -m lab8.benchmark --shapes workflow,single,orchestrator,swarm --cases data/public_claims.jsonl --seeds 11,22,33,44,55 --out reports/benchmark.json`
+- Run id / file report: `src/reports/benchmark.json`; ví dụ `R-workflow-C-001-s11`, `R-swarm-C-002-s55`.
+- Kết quả so với hypothesis (đúng / sai / không kết luận được), kèm số liệu: Đúng trên bộ public này. Workflow 70/70 (pass 1.000, pass^5 1.000, cost/success 27.86 VND); swarm 69/70 (pass 0.986, pass^5 0.929, cost/success 49.57 VND). Trial swarm fail là C-002 seed 55 (ticket nói trễ 5 ngày, order ghi 2 ngày); workflow không fail. Đây là so sánh shape, không chứng minh nguyên nhân phổ quát.
 - Giới hạn: MockLLM không phải model sản xuất, latency là `unavailable`.
 
 Muốn đi xa hơn một ablation để lấy điểm cộng thì xem [docs/bonus_topics.md](../../docs/bonus_topics.md).

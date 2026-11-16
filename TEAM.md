@@ -12,7 +12,7 @@
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
 |   1 | Nguyễn Thị Hồng San | 2A202603513 | 26ai.sannth@vinuni.edu.vn | nhánh `03513-NguyenThiHongSan` | workflow (shape A) |
-|   2 |        |      |       |        |         |
+|   2 | Nguyễn Thị Thanh Thúy | 2A202603523 | thanhthuy02072004@gmail.com | Chưa xác minh | workflow/single/orchestrator; crash, benchmark, report |
 
 Gợi ý chia vai:
 
@@ -26,6 +26,7 @@ Gợi ý chia vai:
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
 | Nguyễn Thị Hồng San | workflow (shape A) | `aae7ba2`, `2a26331`, `0314734` | `src/tests/test_workflow_shape.py` (107 test) |
+| Nguyễn Thị Thanh Thúy | Ba shape; CP3–CP5 validation/report | Chưa commit (working tree; HEAD 034c6c4) | `tests/test_public_matrix.py` (248 passed, không sửa); host suite (54 passed, không sửa) |
 
 ## Cá nhân
 
