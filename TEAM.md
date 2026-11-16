@@ -11,7 +11,7 @@
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 |        |      |       |        |         |
+|   1 | Nguyễn Thị Hồng San | 2A202603513 | 26ai.sannth@vinuni.edu.vn | nhánh `03513-NguyenThiHongSan` | workflow (shape A) |
 |   2 |        |      |       |        |         |
 
 Gợi ý chia vai:
@@ -25,7 +25,7 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| | | | |
+| Nguyễn Thị Hồng San | workflow (shape A) | `aae7ba2`, `2a26331`, `0314734` | `src/tests/test_workflow_shape.py` (107 test) |
 
 ## Cá nhân
 
@@ -52,3 +52,21 @@ Sao chép mục dưới đây cho từng thành viên.
 ### Bằng chứng
 
 -
+
+## 2A202603513_NguyenThiHongSan
+
+### Phần việc phụ trách
+
+- Shape A — workflow (`src/lab8/shapes/workflow.py`) và các phần CP3–CP4 của shape này: crash, ledger, approval, secret.
+
+### Đóng góp cụ thể
+
+- `aae7ba2`: viết shape workflow (CP2).
+- `2a26331`: làm cứng workflow (không ném exception, `order_id` trắng → `needs_info`), thêm `reports/crash.json` (20/20).
+- `0314734`: thêm `src/tests/test_workflow_shape.py`, 107 test trong cổng host.
+
+### Bằng chứng
+
+- Ma trận student workflow: 62 passed. Cổng host: 161 passed. Crash suite: 20/20.
+- Benchmark public 5 seed: pass 1.000, pass^5 1.000, cost/success 35.30 VND (mô phỏng).
+- Báo cáo chi tiết: [report/team/2A202603513_NguyenThiHongSan.md](report/team/2A202603513_NguyenThiHongSan.md).
