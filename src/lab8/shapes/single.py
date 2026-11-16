@@ -20,23 +20,7 @@ ones. `lab8.trace.Trace` does this; your own tracer is fine if it matches.
 
 from __future__ import annotations
 
-<<<<<<< Updated upstream
-from lab8.schemas import RunResult
-from lab8.shapes.common import not_implemented
 
-
-def run_claim(
-    claim_id: str,
-    *,
-    seed: int,
-    store_path: str,
-    crash_at: str | None = None,
-) -> RunResult:
-    # TODO CP2 (student): thay stub này bằng shape single theo các bước ở docstring đầu file.
-    # TODO CP3 (student): truyền crash_at vào durability.issue_refund, không bắt InjectedCrash.
-    del store_path, crash_at
-    return not_implemented("single", claim_id, seed)
-=======
 from lab8.db import connect
 from lab8.durability import InjectedCrash, issue_refund
 from lab8.mock_llm import complete
@@ -119,4 +103,4 @@ def run_claim(claim_id: str, *, seed: int, store_path: str,
         return done("resolved", proposal)
     finally:
         conn.close()
->>>>>>> Stashed changes
+
