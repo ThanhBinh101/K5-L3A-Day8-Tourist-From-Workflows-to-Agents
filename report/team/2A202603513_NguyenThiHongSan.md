@@ -70,5 +70,4 @@ Run id dẫn chứng: `R-workflow-C-012-s11` (crash `after_effect_before_checkpo
 ## 6. Tự đánh giá
 
 - Đạt: workflow qua toàn bộ T01–T14 trên 5 seed, an toàn khi crash, không lộ secret, có bộ test riêng chạy trong cổng host.
-- Chưa làm: tự kiểm trên `student_drop/` (chờ giảng viên phát).
 - Rút ra: tiền phải do code tính và host ghi; checkpoint đơn lẻ không thay được ledger có idempotency key (`python -m lab8.demo.buggy_workflow` ra 2 dòng refund); trace là ranh giới bảo mật nên chỉ ghi field đã chọn.
