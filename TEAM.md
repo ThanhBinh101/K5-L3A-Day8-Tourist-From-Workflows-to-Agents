@@ -11,7 +11,7 @@
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 |        |      |       |        |         |
+|   1 | Nguyễn Thị Thanh Thúy | 2A202603523 | thanhthuy02072004@gmail.com | Chưa xác minh | workflow/single/orchestrator; crash, benchmark, report |
 |   2 |        |      |       |        |         |
 
 Gợi ý chia vai:
@@ -25,21 +25,21 @@ Gợi ý chia vai:
 
 | Người | Vai | Commit | Test đã thêm hoặc sửa |
 | --- | --- | --- | --- |
-| | | | |
+| Nguyễn Thị Thanh Thúy | Ba shape; CP3–CP5 validation/report | Chưa commit (working tree; HEAD 034c6c4) | `tests/test_public_matrix.py` (248 passed, không sửa); host suite (54 passed, không sửa) |
 
 ## Cá nhân
 
 Mỗi thành viên đồng thời tạo một báo cáo riêng trong `report/` theo dạng:
 
 ```text
-report/team/MSSV_HoTen.md
+report/team/2A202603523_NguyenThiThanhThuy.md
 ```
 
 Ví dụ: `report/team/20241234_NguyenVanAn.md`.
 
-Sao chép mục dưới đây cho từng thành viên.
+Sao chép mục dưới đây cho từng thành viên. Báo cáo hiện có: [2A202603523_NguyenThiThanhThuy.md](report/team/2A202603523_NguyenThiThanhThuy.md).
 
-## MSSV_HoTen
+## 2A202603523_NguyenThiThanhThuy
 
 ### Phần việc phụ trách
 
