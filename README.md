@@ -1,5 +1,11 @@
 # Lab 8 — From Workflows to Agents (LogiX-VN: một task, bốn kiến trúc)
 
+## UI demo ba kiến trúc
+
+Chạy từ thư mục `src/`: `python3 -m lab8.demo.web --port 8088`, rồi mở [http://127.0.0.1:8088](http://127.0.0.1:8088). UI chạy thật workflow, single agent và orchestrator; hỗ trợ chạy một lần, retry và crash/phục hồi.
+
+[Xem kịch bản trình bày](src/lab8/demo/README.md) · [Báo cáo nhóm và số đo](report/team/group_report.md).
+
 AI20K K5, ngày 8. Nhóm xử lý claim hoàn phí vận chuyển của công ty giả lập LogiX-VN bằng **bốn kiến trúc** (workflow, single agent, orchestrator, swarm), rồi dựa trên số đo để chọn kiến trúc **ít tự chủ nhất mà vẫn làm được việc**. Dữ liệu là dữ liệu giả. Không cần GPU, API key hay internet trong giờ lab; chạy được trên Windows, macOS và Linux.
 
 **Loại bài:** Nhóm · **Thời lượng:** 4 giờ tại lớp (13:30–17:30) · **Deadline:** lớp sáng 23h59 GMT+7 ngày lab; lớp chiều/tối 11h59 GMT+7 ngày hôm sau ([SUBMISSION.md](SUBMISSION.md#deadline-gmt7))

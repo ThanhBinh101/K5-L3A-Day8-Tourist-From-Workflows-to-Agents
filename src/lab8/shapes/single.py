@@ -103,4 +103,3 @@ def run_claim(claim_id: str, *, seed: int, store_path: str,
         return done("resolved", proposal)
     finally:
         conn.close()
-

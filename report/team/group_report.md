@@ -1,49 +1,83 @@
 # Báo cáo nhóm — Lab 8 LogiX-VN
 
-Tối đa 5 trang ngoài phụ lục. Số liệu lấy từ file trong `src/reports/`, không chép tay từ terminal.
+## 1. Thông tin nhóm và phiên bản
 
-## 1. Thông tin nhóm
+- Nhóm: Tourist (theo tên repo; cần xác nhận tên nhóm chính thức trong TEAM.md).
+- Lớp: L3A. Danh sách thành viên và phân công chính thức chưa được điền trong TEAM.md; báo cáo không tự gán đóng góp cá nhân.
+- Bản nền đã tích hợp workflow/orchestrator: `ecff509873ac10eeea0514f0d4a25083974051cd` trên nhánh `main`.
+- Commit chốt: **chưa tạo cho bản UI/báo cáo này**. Benchmark được chạy trên working tree đã gỡ conflict single.py; không dùng hash bản nền để giả làm hash chốt. [Manifest](evidence_manifest.json) ghi SHA-256 code và report đã đo.
 
-- Tên nhóm: Chưa được cung cấp; xem thông tin nhóm trong `TEAM.md`.
-- Thành viên: Chưa được khai báo trong `TEAM.md`; chưa thể xác nhận danh sách.
-- Commit chốt (trùng `report/team/decision_adr.md`): Chưa commit; working tree dựa trên HEAD `034c6c4`.
+## 2. Mục tiêu và phương pháp
 
-## 2. Mục tiêu và cách tiếp cận
+Xử lý yêu cầu hoàn phí vận chuyển bằng workflow, single agent và orchestrator, đồng thời dùng swarm tham chiếu làm đối chứng. Mỗi shape trả cùng RunResult; code tính tiền, host kiểm approval/quyền sở hữu/trần theo đơn/idempotency. Mục tiêu là chọn mức tự chủ đủ dùng dựa trên số đo, không mặc định nhiều agent tốt hơn.
 
-Bài toán yêu cầu cùng một claims flow chạy trên bốn shape, với nguồn sự thật là order/policy và quyền ghi refund chỉ thuộc host. Mỗi shape đọc claim/order qua tool allowlist, dùng `compute_compensation` để tính quote, rồi chỉ chuyển quote đầy đủ sang `durability.issue_refund`; host kiểm approval, cap theo order, idempotency và ledger. Ba shape nhóm viết được triển khai theo thứ tự workflow xác định, single ReAct có giới hạn 8 bước, rồi orchestrator handoff cho investigator chỉ đọc. Thông tin phân công thành viên chưa được cung cấp.
+Benchmark giữ cùng 14 claim public, 5 seed 11/22/33/44/55, MockLLM, policy và bảng giá. Mỗi trial dùng SQLite mới để tránh hiệu ứng từ trial trước. Tổng 4 × 14 × 5 = 280 trial. UI so sánh đúng ba kiến trúc theo yêu cầu demo; swarm chỉ xuất hiện trong benchmark.
 
-## 3. Giải pháp
+## 3. Giải pháp và ranh giới trách nhiệm
 
-`workflow` đọc claim view, lookup order và tính quote bằng code; không để model quyết định tiền. `single` dùng `run_react` tối đa 8 bước để chọn các tool đọc, còn quote và refund vẫn do code/host xử lý. `orchestrator` tạo handoff bằng `make_handoff`, chỉ cấp read-only tools và trace handoff đã sanitize; investigator không thể ghi ledger. Trace ghi trạng thái lookup, quote, decision, handoff đã lọc và crash marker, nhưng không ghi ticket thô, parent secret, headers, SĐT, địa chỉ, ghi chú nội bộ hoặc tên hàng. Xem [docs/architecture.md](../../docs/architecture.md) và [docs/contracts.md](../../docs/contracts.md).
+| Kiến trúc | Cách xử lý | Ranh giới |
+|---|---|---|
+| Workflow | Checklist Python: claim → đơn → quote → host; MockLLM soạn phản hồi | Đường đi cố định, không lấy số tiền từ ticket |
+| Single | run_react tối đa 8 lượt, decide chọn tool đọc dựa trên observation | worker=True chặn tool ghi; sau vòng lặp code mới gọi host |
+| Orchestrator | make_handoff tạo gói cho investigator đọc order/policy và tính quote | Handoff theo allowlist; investigator không có quyền ghi tiền |
+| Swarm tham chiếu | Thêm peer/model call, có điểm yếu tin ticket ở một seed | Giữ nguyên để quan sát variance, không sửa cho đẹp kết quả |
 
-## 4. Kết quả
+MockLLM không cung cấp structured tool-calling của model thật. Trong single, callback decide chọn tool bằng code và gọi MockLLM để mô phỏng usage. Điều này giới hạn kết luận về khả năng suy luận tự chủ.
 
-Benchmark `src/reports/benchmark.json`: 14 public claims × 5 seeds = 70 trial/shape. Cost là VND mô phỏng; variance là population variance của seed pass rate.
+**Tiền và approval.** compute_compensation tính quote từ order và policy hiện hành. Shape truyền **quote đầy đủ** vào issue_refund; host tự trừ khoản đã hoàn, giới hạn approval và paid_vnd. Ví dụ C-014: quote 150.000đ, đã trả 30.000đ, effect mới 120.000đ. Tự trừ trước sẽ khiến host trừ hai lần. Quote > 0 nhưng approval hỏng vẫn đi qua host để tạo audit policy_denied.
 
-| Shape | Pass rate | Pass^5 | Seed min–max | Variance | Cost/success (VND) | Mean/p95 steps |
-| --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| workflow | 1.000 | 1.000 | 1.000–1.000 | 0.000000 | 27.86 | 3.79 / 4 |
-| single | 1.000 | 1.000 | 1.000–1.000 | 0.000000 | 30.30 | 3.79 / 4 |
-| orchestrator | 1.000 | 1.000 | 1.000–1.000 | 0.000000 | 55.71 | 4.71 / 5 |
-| swarm | 0.986 | 0.929 | 0.929–1.000 | 0.000816 | 49.57 | 2.80 / 3 |
+**Durability.** Mỗi claim dùng khóa refund:claim_id. Truyền crash_at vào host, ghi trace crash rồi phát lại InjectedCrash để test thấy crash thật. finally đóng kết nối. Khi resume, ledger là nguồn xác nhận effect đã ghi; checkpoint riêng lẻ không đủ chống trả trùng.
 
-Swarm trượt 1 trial: C-002, seed 55, trả resolved thay vì denied do tin số ngày trong ticket. `src/reports/crash.json` báo `crash_safety = 20/20`; crash rồi resume giữ một refund và một audit. Không có `student_drop/` để tự kiểm hidden trong workspace này; hidden grader chưa chạy.
+**Trace và handoff.** Không ghi ticket/parent_secret/header/SĐT/địa chỉ/tên hàng/ghi chú nội bộ. Trace dùng dữ liệu đã chọn: tool, quote, decision; orchestrator thêm handoff được lọc và kết quả order view trong allowlist. Không coi LLM tóm tắt là công cụ xóa secret.
 
-Quyết định kiến trúc và lý do: xem `report/team/decision_adr.md`. Phiếu nghiên cứu và ablation: xem `report/team/research_card.md`.
+**UI demo.** Python HTTP server phục vụ HTML/CSS/JS trên 127.0.0.1:8088. Mỗi kiến trúc chạy trong subprocess có thư mục tạm, SQLite và trace riêng. Retry/crash dùng cùng SQLite trong hai lượt của cùng kiến trúc; mỗi request so sánh mới lại bắt đầu từ dữ liệu public. UI hiển thị result/trace thật và kiểm bằng trial_pass, không hardcode kết quả. Chi phí/model/tool calls trên thẻ thuộc lượt cuối. Không cần API key, Node.js hay dịch vụ bên ngoài.
+
+## 4. Kết quả thực nghiệm
+
+Nguồn số liệu: [benchmark.json](../../src/reports/benchmark.json), do lab8.benchmark sinh; không sửa JSON bằng tay.
+
+| Shape | Trial pass | Pass rate | pass^5 | Seed min–max | Variance | Cost/success (VND mô phỏng) | Mean / p95 steps |
+|---|---:|---:|---:|---|---:|---:|---|
+| workflow | 70/70 | 1.0000 | 1.0000 | 1.0000–1.0000 | 0.000000 | 35.3000 | 4.4286 / 5 |
+| single | 70/70 | 1.0000 | 1.0000 | 1.0000–1.0000 | 0.000000 | 29.1057 | 5.5714 / 6 |
+| orchestrator | 70/70 | 1.0000 | 1.0000 | 1.0000–1.0000 | 0.000000 | 47.8529 | 3.7143 / 4 |
+| swarm | 69/70 | 0.9857 | 0.9286 | 0.9286–1.0000 | 0.000816 | 49.5670 | 2.8000 / 3 |
+
+- Crash suite chính thức: **20/20**, nguồn [crash.json](../../src/reports/crash.json). Suite này kiểm host và swarm tham chiếu; không mô tả nó là 20 điểm crash riêng cho từng shape.
+- Toàn bộ test: **442 passed** với `python3 -m pytest -q -o addopts=`. Gồm test host, ma trận student, test nhóm hiện có và 15 test mới cho backend demo/input. Test demo chạy thật các shape ở retry, crash, approval, scope và phần tiền chênh lệch.
+- Kiểm browser: C-001 trả 35.000đ trên cả ba shape; crash rồi resume vẫn một effect/một audit; C-002 kiểm từ chối khi ticket khác order.
+- Swarm sai C-002 seed 55: order trễ 2 ngày nhưng tin ticket nói 5 ngày. Test student coi đây là lỗi tham chiếu đã biết; việc pytest xanh không đồng nghĩa swarm đạt benchmark 100%.
+- Chưa được cung cấp student_drop/nhãn hidden: **chưa kết luận đạt hidden ≥ 0,75**.
+
+**Diễn giải lựa chọn.** Cả ba implementation đạt 70/70 public và variance=0. Single có chi phí được ghi nhận thấp nhất trong snapshot hiện tại (29,1057 VND/success), nên là ứng viên tiếp tục kiểm hidden và demo. Đây chưa phải kết luận nhân quả rằng single luôn rẻ hơn workflow: workflow hiện cộng tool_cost cho lời gọi issue_refund, single/orchestrator không cộng bước host này vào Budget; prompt và số tool đọc cũng khác. Vì vậy phải chuẩn hóa cách đếm trước khi dùng khoảng cách chi phí để chốt kiến trúc nhóm. Nếu ưu tiên mức tự chủ tối thiểu cho luật cố định, workflow vẫn là ứng viên phù hợp. Quyết định cuối và ADR/research card cần nhóm chốt, không ghi thay sự đồng thuận chưa có.
 
 ## 5. Khó khăn và cách xử lý
 
-`python -m lab8.demo.buggy_workflow` in `unsafe refund rows: 2 (the host ledger must stay at 1)`, minh họa checkpoint đơn lẻ không ngăn trả trùng; nhóm dựa vào ledger/idempotency của host. `python -m lab8.crash_test --count 20 --out reports/crash.json` cho `crash_safety 20/20`. `python -m pytest -q -m student -o addopts=` cho 248 passed; `python -m pytest -q` cho 54 passed; `python -m lab8.smoke` in `lab8.smoke pass`. Các số liệu benchmark được lấy từ JSON do lệnh lab sinh ra.
+Khi bắt đầu, single.py chứa cả hai phần conflict `Updated upstream`/`Stashed changes`, gây lỗi cú pháp. Giữ phần implementation single đã có, bỏ stub và marker; không thay host hay thước đo. Sau đó chạy lại toàn bộ test và benchmark.
 
-## 6. Tổng hợp đóng góp
+Để tránh demo trả trùng do chia sẻ state giữa ba card, mỗi shape chạy trong worker/thư mục riêng. Muốn chứng minh retry/crash an toàn thì dùng lại database giữa hai lượt trong worker, thay vì tạo mới database rồi tuyên bố chống trùng. Browser chỉ nhận nhãn kịch bản đã biên soạn và trace đã lọc, không tải row thô.
 
-Thông tin cá nhân và phần việc của Nguyễn Thị Thanh Thúy được ghi trong `TEAM.md` và [báo cáo cá nhân](2A202603523_NguyenThiThanhThuy.md). Thông tin thành viên thứ hai chưa được cung cấp.
+## 6. Đóng góp và công cụ hỗ trợ
 
-## 7. Hạn chế và hướng cải thiện
+Lịch sử repo có các phần workflow/orchestrator đã tích hợp; báo cáo giữ nguyên các phần đó và không nhận là vừa viết mới. Phiên này gỡ conflict single, thêm server/UI so sánh, test backend demo, chạy lại bằng chứng và soạn báo cáo với hỗ trợ Codex. Nhóm cần ghi chính xác người phụ trách, commit và test trong TEAM.md cùng báo cáo cá nhân; không tự điền tên/đóng góp/tự đánh giá chưa được xác nhận.
 
-Kết quả chỉ phủ 14 public claims và 5 seed, không thay thế hidden set 40 × 5. MockLLM không phải model sản xuất, cost chỉ mô phỏng, latency là `unavailable`; không có dữ liệu `student_drop/` hoặc hidden grade. Kết luận chọn workflow cần được xem lại nếu hidden pass rate xuống dưới ngưỡng, có must-pass fail, hoặc đo model thật cho thấy latency/chi phí/nhu cầu song song làm shape khác phù hợp hơn.
+## 7. Hạn chế, tái lập và hướng cải thiện
 
-## 8. Tài liệu tham khảo
+MockLLM là mô phỏng, chi phí không phải hóa đơn API, latency unavailable. Steps là số event trace, phụ thuộc mức logging, không phải thời gian hay số bước suy luận thống nhất. Public nhỏ và đã biết nhãn; chưa chứng minh tổng quát trên hidden hoặc dữ liệu thực. UI local không phải dịch vụ production hay nơi xử lý dữ liệu khách thật.
 
-1. Cemri et al. (2025), “Why Do Multi-Agent LLM Systems Fail?”, arXiv:2503.13657v3, https://arxiv.org/abs/2503.13657.
-2. Tài liệu lab: [docs/business_rules.md](../../docs/business_rules.md), [docs/contracts.md](../../docs/contracts.md), [docs/metrics.md](../../docs/metrics.md), [CHECKPOINTS.md](../../CHECKPOINTS.md).
+Chạy lại từ src:
+
+```bash
+python3 -m pytest -q -o addopts=
+python3 -m lab8.benchmark --shapes workflow,single,orchestrator,swarm --cases data/public_claims.jsonl --seeds 11,22,33,44,55 --out reports/benchmark.json
+python3 -m lab8.crash_test --count 20 --out reports/crash.json
+python3 -m lab8.demo.web --port 8088
+```
+
+Hướng tiếp theo: chuẩn hóa accounting, tự kiểm student_drop khi được cấp, hoàn tất TEAM/ADR/research card/báo cáo cá nhân, commit code và điền hash thật rồi chạy check_submission. UI/báo cáo hoàn thành không đồng nghĩa toàn bộ checklist nộp bài đã đủ.
+
+## 8. Tài liệu tham khảo và hướng dẫn demo
+
+- [Luật nghiệp vụ](../../docs/business_rules.md), [contract](../../docs/contracts.md), [metrics](../../docs/metrics.md) và [luật sử dụng AI](../../RULES.md) của starter.
+- [Kịch bản trình bày và cách chạy UI](../../src/lab8/demo/README.md).
+- [Manifest phiên bản đã đo](evidence_manifest.json).
